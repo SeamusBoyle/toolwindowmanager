@@ -26,6 +26,7 @@
 #define TOOLWINDOWMANAGER_H
 
 #include <QWidget>
+#include <QPointer>
 #include <QSplitter>
 #include <QTabWidget>
 #include <QTabBar>
@@ -255,8 +256,7 @@ private:
   QTimer m_dropSuggestionSwitchTimer; // used for switching drop suggestions
 
   // last widget used for adding tool windows, or 0 if there isn't one
-  // (warning: may contain pointer to deleted object)
-  ToolWindowManagerArea* m_lastUsedArea;
+  QPointer<ToolWindowManagerArea> m_lastUsedArea;
   void handleNoSuggestions();
   //remove tool window from its area (if any) and set parent to 0
   void releaseToolWindow(QWidget* toolWindow);
