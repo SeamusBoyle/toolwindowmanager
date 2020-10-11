@@ -230,26 +230,26 @@ void ToolWindowManager::setRubberBandLineWidth(int pixels) {
 
 QVariant ToolWindowManager::saveState() {
   QVariantMap result;
-  result["toolWindowManagerStateFormat"] = 1;
+  result[QLatin1String("toolWindowManagerStateFormat")] = 1;
   ToolWindowManagerWrapper* mainWrapper = findChild<ToolWindowManagerWrapper*>();
   if (!mainWrapper) {
     qWarning("can't find main wrapper");
     return QVariant();
   }
-  result["mainWrapper"] = mainWrapper->saveState();
+  result[QLatin1String("mainWrapper")] = mainWrapper->saveState();
   QVariantList floatingWindowsData;
   foreach(ToolWindowManagerWrapper* wrapper, m_wrappers) {
     if (!wrapper->isWindow()) { continue; }
     floatingWindowsData << wrapper->saveState();
   }
-  result["floatingWindows"] = floatingWindowsData;
+  result[QLatin1String("floatingWindows")] = floatingWindowsData;
   return result;
 }
 
 void ToolWindowManager::restoreState(const QVariant &data) {
   if (!data.isValid()) { return; }
   QVariantMap dataMap = data.toMap();
-  if (dataMap["toolWindowManagerStateFormat"].toInt() != 1) {
+  if (dataMap[QLatin1String("toolWindowManagerStateFormat")].toInt() != 1) {
     qWarning("state format is not recognized");
     return;
   }
@@ -259,8 +259,8 @@ void ToolWindowManager::restoreState(const QVariant &data) {
     qWarning("can't find main wrapper");
     return;
   }
-  mainWrapper->restoreState(dataMap["mainWrapper"].toMap());
-  foreach(QVariant windowData, dataMap["floatingWindows"].toList()) {
+  mainWrapper->restoreState(dataMap[QLatin1String("mainWrapper")].toMap());
+  foreach(QVariant windowData, dataMap[QLatin1String("floatingWindows")].toList()) {
     ToolWindowManagerWrapper* wrapper = new ToolWindowManagerWrapper(this);
     wrapper->restoreState(windowData.toMap());
     wrapper->show();
@@ -377,8 +377,8 @@ void ToolWindowManager::startDrag(const QList<QWidget *> &toolWindows) {
 
 QVariantMap ToolWindowManager::saveSplitterState(QSplitter *splitter) {
   QVariantMap result;
-  result["state"] = splitter->saveState();
-  result["type"] = "splitter";
+  result[QLatin1String("state")] = splitter->saveState();
+  result[QLatin1String("type")] = QString(QLatin1String("splitter"));
   QVariantList items;
   for(int i = 0; i < splitter->count(); i++) {
     QWidget* item = splitter->widget(i);
@@ -396,22 +396,22 @@ QVariantMap ToolWindowManager::saveSplitterState(QSplitter *splitter) {
     }
     items << itemValue;
   }
-  result["items"] = items;
+  result[QLatin1String("items")] = items;
   return result;
 }
 
 QSplitter *ToolWindowManager::restoreSplitterState(const QVariantMap &data) {
-  if (data["items"].toList().count() < 2) {
+  if (data[QLatin1String("items")].toList().count() < 2) {
     qWarning("invalid splitter encountered");
   }
   QSplitter* splitter = createSplitter();
 
-  foreach(QVariant itemData, data["items"].toList()) {
+  foreach(QVariant itemData, data[QLatin1String("items")].toList()) {
     QVariantMap itemValue = itemData.toMap();
-    QString itemType = itemValue["type"].toString();
-    if (itemType == "splitter") {
+    QString itemType = itemValue[QLatin1String("type")].toString();
+    if (itemType == QLatin1String("splitter")) {
       splitter->addWidget(restoreSplitterState(itemValue));
-    } else if (itemType == "area") {
+    } else if (itemType == QLatin1String("area")) {
       ToolWindowManagerArea* area = createArea();
       area->restoreState(itemValue);
       splitter->addWidget(area);
@@ -419,7 +419,7 @@ QSplitter *ToolWindowManager::restoreSplitterState(const QVariantMap &data) {
       qWarning("unknown item type");
     }
   }
-  splitter->restoreState(data["state"].toByteArray());
+  splitter->restoreState(data[QLatin1String("state")].toByteArray());
   return splitter;
 }
 

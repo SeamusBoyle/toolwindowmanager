@@ -36,7 +36,7 @@ ToolWindowManagerWrapper::ToolWindowManagerWrapper(ToolWindowManager *manager) :
 , m_manager(manager)
 {
   setWindowFlags(windowFlags() | Qt::Tool);
-  setWindowTitle(" ");
+  setWindowTitle(QLatin1String(" "));
 
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -65,14 +65,14 @@ QVariantMap ToolWindowManagerWrapper::saveState() {
     return QVariantMap();
   }
   QVariantMap result;
-  result["geometry"] = saveGeometry();
+  result[QLatin1String("geometry")] = saveGeometry();
   QSplitter* splitter = findChild<QSplitter*>();
   if (splitter) {
-    result["splitter"] = m_manager->saveSplitterState(splitter);
+    result[QLatin1String("splitter")] = m_manager->saveSplitterState(splitter);
   } else {
     ToolWindowManagerArea* area = findChild<ToolWindowManagerArea*>();
     if (area) {
-      result["area"] = area->saveState();
+      result[QLatin1String("area")] = area->saveState();
     } else if (layout()->count() > 0) {
       qWarning("unknown child");
       return QVariantMap();
@@ -82,16 +82,16 @@ QVariantMap ToolWindowManagerWrapper::saveState() {
 }
 
 void ToolWindowManagerWrapper::restoreState(const QVariantMap &data) {
-  restoreGeometry(data["geometry"].toByteArray());
+  restoreGeometry(data[QLatin1String("geometry")].toByteArray());
   if (layout()->count() > 0) {
     qWarning("wrapper is not empty");
     return;
   }
-  if (data.contains("splitter")) {
-    layout()->addWidget(m_manager->restoreSplitterState(data["splitter"].toMap()));
-  } else if (data.contains("area")) {
+  if (data.contains(QLatin1String("splitter"))) {
+    layout()->addWidget(m_manager->restoreSplitterState(data[QLatin1String("splitter")].toMap()));
+  } else if (data.contains(QLatin1String("area"))) {
     ToolWindowManagerArea* area = m_manager->createArea();
-    area->restoreState(data["area"].toMap());
+    area->restoreState(data[QLatin1String("area")].toMap());
     layout()->addWidget(area);
   }
 }

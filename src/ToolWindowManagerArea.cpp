@@ -126,8 +126,8 @@ bool ToolWindowManagerArea::eventFilter(QObject *object, QEvent *event) {
 
 QVariantMap ToolWindowManagerArea::saveState() {
   QVariantMap result;
-  result["type"] = "area";
-  result["currentIndex"] = currentIndex();
+  result[QLatin1String("type")] = QString(QLatin1String("area"));
+  result[QLatin1String("currentIndex")] = currentIndex();
   QStringList objectNames;
   for(int i = 0; i < count(); i++) {
     QString name = widget(i)->objectName();
@@ -137,12 +137,12 @@ QVariantMap ToolWindowManagerArea::saveState() {
       objectNames << name;
     }
   }
-  result["objectNames"] = objectNames;
+  result[QLatin1String("objectNames")] = objectNames;
   return result;
 }
 
 void ToolWindowManagerArea::restoreState(const QVariantMap &data) {
-  foreach(QVariant objectNameValue, data["objectNames"].toList()) {
+  foreach(QVariant objectNameValue, data[QLatin1String("objectNames")].toList()) {
     QString objectName = objectNameValue.toString();
     if (objectName.isEmpty()) { continue; }
     bool found = false;
@@ -157,7 +157,7 @@ void ToolWindowManagerArea::restoreState(const QVariantMap &data) {
       qWarning("tool window with name '%s' not found", objectName.toLocal8Bit().constData());
     }
   }
-  setCurrentIndex(data["currentIndex"].toInt());
+  setCurrentIndex(data[QLatin1String("currentIndex")].toInt());
 }
 
 void ToolWindowManagerArea::check_mouse_move() {
