@@ -297,6 +297,7 @@ void ToolWindowManager::releaseToolWindow(QWidget *toolWindow) {
     qWarning("cannot find tab widget for tool window");
     return;
   }
+  toolWindow->removeEventFilter(previousTabWidget);
   previousTabWidget->removeTab(previousTabWidget->indexOf(toolWindow));
   toolWindow->hide();
   toolWindow->setParent(0);

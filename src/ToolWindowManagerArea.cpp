@@ -53,6 +53,7 @@ void ToolWindowManagerArea::addToolWindows(const QList<QWidget *> &toolWindows) 
   int index = 0;
   foreach(QWidget* toolWindow, toolWindows) {
     index = addTab(toolWindow, toolWindow->windowIcon(), toolWindow->windowTitle());
+    toolWindow->installEventFilter(this);
   }
   setCurrentIndex(index);
   m_manager->m_lastUsedArea = this;
@@ -120,6 +121,28 @@ bool ToolWindowManagerArea::eventFilter(QObject *object, QEvent *event) {
         check_mouse_move();
       }
     }
+  }
+  switch (event->type()) {
+  case QEvent::WindowTitleChange: {
+    if (QWidget* toolWindow = qobject_cast<QWidget*>(object)) {
+      int index = indexOf(toolWindow);
+      if (index > -1) {
+        setTabText(index, toolWindow->windowTitle());
+      }
+    }
+    break;
+  }
+  case QEvent::WindowIconChange: {
+    if (QWidget* toolWindow = qobject_cast<QWidget*>(object)) {
+      int index = indexOf(toolWindow);
+      if (index > -1) {
+        setTabIcon(index, toolWindow->windowIcon());
+      }
+    }
+    break;
+  }
+  default:
+    break;
   }
   return QTabWidget::eventFilter(object, event);
 }
